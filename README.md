@@ -1,8 +1,12 @@
 # PYYAML-cache-manager
 A cache manager for caching YAML files
 ## Contents
-- [Requirements](Requirements)
-### Requirements
+1. [Requirements](#requirements)
+2. [Usage](#usage)
+    1. [Using module](#module)
+    2. [Using class](#class)
+3. [Remarks](#remarks)
+### Requirements <a name="requirements"></a>
 - Python 3.5+
 - PyYaml
 Install PyYaml using pip:
@@ -13,8 +17,8 @@ Alternatively, path into the repo root:
 ```
 pip install -r .\requirements.txt
 ```
-### Usage
-#### Using module
+### Usage <a name="usage"></a>
+#### Using module <a name="module"></a>
 Cache a Python class/object:
 ```py
 import yaml_cache_manager as cacher
@@ -55,7 +59,7 @@ When it's no longer needed, remove it:
 # Remove cached data by key
 cacher.remove_yaml(cache_path, DATA_KEY.format(generic_data.data_id))
 ```
-#### Using class
+#### Using class <a name="class"></a>
 Alternatively you can accomplish the same functionality with an instance of the `YAMLCacheManager` class:
 ```py
 from yaml_cache_manager import YAMLCacheManager
@@ -83,7 +87,7 @@ print(loaded_data.data_name) # Will output "Greg"
 # Remove cached data by key
 cacher.remove(DATA_KEY.format(generic_data.data_id))
 ```
-### Remarks
+### Remarks <a name="remarks"></a>
 The `get()` method of the `YAMLCacheManager` class and the `get_yaml()` module method return `None` if there is no file found, thus you will need to handle it yourself. Example:
 ```py
 def get_data_by_id(path, data_id):
