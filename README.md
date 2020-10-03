@@ -5,7 +5,8 @@ A cache manager for caching YAML files
 2. [Usage](#usage)
     1. [Using module](#module)
     2. [Using class](#class)
-3. [Remarks](#remarks)
+3. [Acquire data if file not found](#acquire)
+4. [Legislate path](#legislate)
 ### Requirements <a name="requirements"></a>
 - Python 3.5+
 - PyYaml
@@ -87,23 +88,26 @@ print(loaded_data.data_name) # Will output "Greg"
 # Remove cached data by key
 cacher.remove(DATA_KEY.format(generic_data.data_id))
 ```
-### Remarks <a name="remarks"></a>
-The `get()` method of the `YAMLCacheManager` class and the `get_yaml()` module method return `None` if there is no file found, thus you will need to handle it yourself. Example:
+### Acquire data if file not found <a name="acquire"></a>
+Previously, the `get()` method of the `YAMLCacheManager` class and the standard `get_yaml()` method would return `None` if no file is found. However, you can now pass an optional `acquire` lambda method parameter which will excecute as the data acquisition before caching it.
+### `acquire` parameter usage
 ```py
-def get_data_by_id(path, data_id):
-    data = yaml_cache_manager.get_yaml(path, DATA_KEY.format(data_id))
-    if data is None:
-        # retrieve data with a query, as an example, here
-        
-        # then cache the queried data
-        yaml_cache_manager.cache_yaml(path, DATA_KEY.format(data_id), queried_data)
-        # before reloading it again
-        data = yaml_cache_manager.get_yaml(path, DATA_KEY.format(data_id))
+def get_employees():
+    # Using the sqlite3 module as an example
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM employee;')
+    rows = cursor.fetchall()
+    return rows
+
+def get_employees_cache(path, key):
+    # We pass in a lambda function as the acquire() parameter
+    data = cacher.get_yaml(path, key, lambda : get_employees())
     return data
- ```
-There is a bonus `legislate_path()` method used by the cache manager automatically, but you may use it yourself in your project where it may be useful. It will ensure there is no `/` at the beginning, and there is a `/` at the end. It takes a `path` paremeter and returns the `path` as a `string`
+```
+Note that if no data is found from the `acquire` method, no file will be cached.
+### Legislate path <a name="legislate"><a/>
+There is a bonus `legislate_path()` method used by the cache manager autmatically, but you may use it yourself in your project where it may be useful. It will ensure there is no `/` at the beginning, and there is a `/` at the end. It takes a `path` paremeter and returns the `path` as a `string`
 #### `legislate_path()` usage
 ```py
 data = yaml.load(open('{}{}.yml'.format(yaml_cache_manager.legislate_path(path), key)))
 ```
-All other methods within the module/class are `void` methods
